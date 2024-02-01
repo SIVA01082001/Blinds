@@ -91,12 +91,12 @@ def analyze_bigquery_table(project_id, dataset_id, table_id):
     table = client.get_table(table_ref)
     columns = [field.name for field in table.schema]
 
-    # Fetch a sample of the table to get the data types
-    query = f"SELECT * FROM `{table_ref}` LIMIT 5"
-    df_sample = client.query(query).to_dataframe()
+    # # Fetch a sample of the table to get the data types
+    # query = f"SELECT * FROM `{table_ref}` LIMIT 5"
+    # df_sample = client.query(query).to_dataframe()
 
-    # Analyze the sample DataFrame to get data types
-    data_types = df_sample.dtypes
+    # # Analyze the sample DataFrame to get data types
+    # data_types = df_sample.dtypes
 
     # Read the full table into a DataFrame
     query = f"SELECT * FROM `{table_ref}`"
