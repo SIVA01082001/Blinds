@@ -35,7 +35,7 @@ def analyze_dataframe(df, dataset_name):
     
      
     # Add a new column "Unique Values" based on the condition
-    columns_table['Unique Values'] = df.apply(lambda col: ', '.join(map(str, col.unique())) if col.nunique() / len(col) < 0.01 else None)
+    # columns_table['Unique Values'] = df.apply(lambda col: ', '.join(map(str, col.unique())) if col.nunique() / len(col) < 0.01 else None)
 
     # Convert 'Duplicate Percentage' values to numerical
     # columns_table['Duplicate Percentage'] = columns_table['Duplicate Percentage'].astype(str)
@@ -109,7 +109,8 @@ def analyze_bigquery_table(project_id, dataset_id, table_id):
 #---------------------------------------------------------------------------------------------------------------------------
 # List of GCP BigQuery table details
 bigquery_datasets = [
-    ("your_project_id", "your_dataset_id", "your_table_id"),
+    ("your_project_id", "your_dataset_id", "your_table_id1"),
+    ("your_project_id", "your_dataset_id", "your_table_id2"),
     # Add more GCP table details as needed
 ]
 
@@ -156,7 +157,7 @@ for project_id, dataset_id, table_id in bigquery_datasets:
     # Append the HTML output to the combined output string
     combined_html_output += f"<div class='dataset-table' data-dataset-name='{project_id}.{dataset_id}.{table_id}'>"
     combined_html_output += dataset_info
-    combined_html_output += styled_output.render()
+    combined_html_output += styled_output.to_html(escape=False)
     combined_html_output += "</div>"
 
     # Add a separator line
