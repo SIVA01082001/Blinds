@@ -12,7 +12,7 @@ def get_table_info(project_id, dataset_id):
     excluded_tables = []
 
     for table in tables:
-      if table in table_id.starts_with('AVAYA'):
+      if table in table_id.starts_with('AVAYA') or table in table_id.starts_with('NEXIDIA') or table in table_id.starts_with('NICE') or table in table_id.starts_with('SALESFORCE'):
           try:
               client = bigquery.Client(project='analytics-views-thd')
               # Try to get table reference and fetch table schema
@@ -33,10 +33,13 @@ def get_table_info(project_id, dataset_id):
   
               table_info_list.append(table_info)
           except Exception as e:
-              # Handle exceptions (e.g., access issues) and exclude the table
-              excluded_tables.append(table.table_id)
+              excluded_tables_info = {
+                  "Table Name" : table.table_id
+              }
+              excluded_tables.append(excluded_tables_info)
 
-    return pd.DataFrame(table_info_list), excluded_tables
+
+    return pd.DataFrame(table_info_list), pd.DataFrame(excluded_lists)
 
 # Replace with your GCP project_id and dataset_id
 project_id = "analytics-views-thd"
