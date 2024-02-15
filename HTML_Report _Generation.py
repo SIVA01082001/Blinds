@@ -7,15 +7,18 @@ def analyze_dataframe(df, dataset_name):
     # Get the number of rows and columns
     num_rows, num_cols = df.shape
 
-    # List of Columns with Data Types, Null Values, Null Percentage, Distinct Values, and Duplicate Values
+    df_str = df.map(lambda x: str(x) if instance (x,np.ndarray) else x)
     columns_table = pd.DataFrame({
-        'Data Type': df.dtypes,
-        'Null Values': df.isnull().sum(),
-        'Null Percentage': ((df.isnull().sum() / len(df)) * 100).map("{:.2f}%".format),
-        'Distinct Values': df.nunique(),
-        'Distinct Percentage': ((df.nunique() / len(df)) * 100).map("{:.2f}%".format),
-        'Duplicate Values': df.apply(lambda x: len(x) - len(x.unique())),
-        'Duplicate Percentage': ((df.apply(lambda x: len(x) - len(x.unique()))) / len(df) * 100).map("{:.2f}%".format)})
+        'Dataset': dataset_id,
+        'Table_Name' : table_id,
+        'Column_Name' : df.columns,
+        'Data Type': df_str.dtypes,
+        'Null Values': df_str.isnull().sum(),
+        'Null Percentage': ((df_str.isnull().sum() / len(df_str)) * 100).map("{:.2f}%".format),
+        'Distinct Values': df_str.nunique(),
+        'Distinct Percentage': ((df_str.nunique() / len(df_str)) * 100).map("{:.2f}%".format),
+        'Duplicate Values': df_str.apply(lambda x: len(x) - len(x.unique())),
+        'Duplicate Percentage': ((df_str.apply(lambda x: len(x) - len(x.unique()))) / len(df) * 100).map("{:.2f}%".format)})
 
     numeric_columns = df.select_dtypes(include=['number']).columns
 
@@ -24,7 +27,22 @@ def analyze_dataframe(df, dataset_name):
     zero_percentage = (zero_count / len(numeric_columns) * 100).map("{:.2f}%".format)
     columns_table["Zero's Count"] = zero_count
     columns_table["Zero's Percentage"] = zero_percentage
-   
+
+   # Check if there are numeric columns before calculating statistics
+    if not numeric_columns.empty:
+        # Calculate average, minimum, maximum, median, and mode for numeric columns and add new columns
+        columns_table['Minimum_value'] = df[numeric_columns].min().map("{:.2f}".format)
+        columns_table['Maximum_value'] = df[numeric_columns].max().map("{:.2f}".format)
+        columns_table['Mid_value'] = df[numeric_columns].median().map("{:.2f}".format)
+        columns_table['Most_common_value'] = df[numeric_columns].mode().iloc[0].map("{:.2f}".format)
+        columns_table['Average_value'] = df[numeric_columns].mean().map("{:.2f}".format)
+    else:
+        # If there are no numeric columns, set these columns to a placeholder value or handle as needed
+        columns_table['Minimum_value'] = None
+        columns_table['Maximum_value'] = None
+        columns_table['Mid_value'] = None
+        columns_table['Most_common_value'] = None
+        columns_table['Average_value'] = None
 
     # Calculate average, minimum, maximum, median, and mode for numeric columns and add new columns
     columns_table['Minimum_value'] = df[numeric_columns].min().map("{:.2f}".format)
@@ -33,12 +51,6 @@ def analyze_dataframe(df, dataset_name):
     columns_table['Most_common_value'] = df[numeric_columns].mode().iloc[0].map("{:.2f}".format)
     columns_table['Average_value'] = df[numeric_columns].mean().map("{:.2f}".format)
     
-     
-    # Add a new column "Unique Values" based on the condition
-    # columns_table['Unique Values'] = df.apply(lambda col: ', '.join(map(str, col.unique())) if col.nunique() / len(col) < 0.01 else None)
-
-    # Convert 'Duplicate Percentage' values to numerical
-    # columns_table['Duplicate Percentage'] = columns_table['Duplicate Percentage'].astype(str)
 
     # Apply conditional formatting to highlight values in 'Null Percentage' column
     def highlight_percentage(val):
@@ -58,11 +70,11 @@ def analyze_dataframe(df, dataset_name):
 
     styled_columns_table = (
         columns_table.style
-        .applymap(highlight_percentage, subset=['Null Percentage'])
-        .applymap(highlight_distinct, subset=['Distinct Percentage'])
-        .applymap(highlight_duplicates, subset=['Duplicate Percentage'])
-        .applymap(highlight_numeric, subset=['Minimum_value', 'Maximum_value', 'Mid_value', 'Most_common_value', 'Average_value'])
-        .applymap(highlight_numeric, subset=["Zero's Count", "Zero's Percentage"])  # Added highlight for numeric columns
+        .map(highlight_percentage, subset=['Null Percentage'])
+        .map(highlight_distinct, subset=['Distinct Percentage'])
+        .map(highlight_duplicates, subset=['Duplicate Percentage'])
+        .map(highlight_numeric, subset=['Minimum_value', 'Maximum_value', 'Mid_value', 'Most_common_value', 'Average_value'])
+        .map(highlight_numeric, subset=["Zero's Count", "Zero's Percentage"])  # Added highlight for numeric columns
         .set_table_styles([{
             'selector': 'thead tr',
             'props': 'border-bottom: 1px solid black;'
