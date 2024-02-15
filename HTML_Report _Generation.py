@@ -44,12 +44,6 @@ def analyze_dataframe(df, dataset_name):
         columns_table['Most_common_value'] = None
         columns_table['Average_value'] = None
 
-    # Calculate average, minimum, maximum, median, and mode for numeric columns and add new columns
-    columns_table['Minimum_value'] = df[numeric_columns].min().map("{:.2f}".format)
-    columns_table['Maximum_value'] = df[numeric_columns].max().map("{:.2f}".format)
-    columns_table['Mid_value'] = df[numeric_columns].median().map("{:.2f}".format)
-    columns_table['Most_common_value'] = df[numeric_columns].mode().iloc[0].map("{:.2f}".format)
-    columns_table['Average_value'] = df[numeric_columns].mean().map("{:.2f}".format)
     
 
     # Apply conditional formatting to highlight values in 'Null Percentage' column
