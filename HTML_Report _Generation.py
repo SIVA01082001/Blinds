@@ -125,6 +125,9 @@ timestamp = datetime.now().strftime("%Y%m%d%H%M")
 # Initialize a string to store the combined HTML output
 combined_html_output = ""
 
+##Creating DF to store output
+combined_dataframe=pd.DataFrame()
+
 # Add JavaScript code for filtering by dataset
 javascript_code = """
 <script>
@@ -168,6 +171,8 @@ for project_id, dataset_id, table_id in bigquery_datasets:
     # Add a separator line
     combined_html_output += "<hr>"
 
+    combined_dataframe=pd.concat([combined_dataframe,styled_output.data],ignore_index=True)
+    
 # Save the combined HTML output to a single file with JavaScript and filter dropdown
 html_output_path = f'DATA_SUMMARY_{timestamp}.html'
 with open(html_output_path, 'w') as file:
@@ -176,3 +181,8 @@ with open(html_output_path, 'w') as file:
     file.write(combined_html_output)
 
 print(f"Combined HTML output with filter saved to {html_output_path}")
+
+
+excel_output_path = f"DATA_SUMMARY_{timestamp}.xlsx'
+combined_dataframe.to_excel(excel_output_path,index=False)
+print(f"Combined Excel output saved to {excel_output_path}")
